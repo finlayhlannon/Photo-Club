@@ -274,7 +274,7 @@ export function Upload({ contestId, setCurrentPage }: { contestId?: Id<"contests
             </select>
           </div>
 
-          {/* Visibility */}
+          {/* Visibility 
           <div>
             <label className="flex items-center space-x-2">
               <input
@@ -287,7 +287,7 @@ export function Upload({ contestId, setCurrentPage }: { contestId?: Id<"contests
                 Make this photo public
               </span>
             </label>
-          </div>
+          </div>*/}
 
           {/* Submit Button */}
           <button
