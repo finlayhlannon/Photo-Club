@@ -29,25 +29,32 @@ export function Leaderboard() {
               }`}
             >
               <div className="flex items-center space-x-4">
-                <div className="flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg ${
-                    index === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600" :
-                    index === 1 ? "bg-gradient-to-br from-gray-400 to-gray-600" :
-                    index === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600" :
-                    "bg-gradient-to-br from-blue-500 to-purple-600"
+                <div className="flex-shrink-0 relative">
+                  {user.profilePictureUrl ? (
+                    <img
+                      src={user.profilePictureUrl}
+                      alt={user.name ?? "User"}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 dark:border-gray-600"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                      {user.name ? user.name.charAt(0).toUpperCase() : '?'}
+                    </div>
+                  )}
+                  <div className={`absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                    index === 0 ? "bg-yellow-500" :
+                    index === 1 ? "bg-gray-500" :
+                    index === 2 ? "bg-orange-500" :
+                    "bg-blue-500"
                   }`}>
-                    {index < 3 ? (
-                      index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"
-                    ) : (
-                      `#${index + 1}`
-                    )}
+                    {index + 1}
                   </div>
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {user.name ?? ""}
+                      {user.name ?? "Anonymous"}
                     </h3>
                     {user.isAdmin && (
                       <span className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 text-xs px-2 py-1 rounded-full">

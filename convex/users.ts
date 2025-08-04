@@ -151,7 +151,26 @@ export const getLeaderboard = query({
       .order("desc")
       .take(20);
 
-    return users;
+    // Get profile picture URLs for each user
+    const usersWithProfilePics = await Promise.all(
+      users.map(async (user) => {
+        let profilePictureUrl = null;
+        if (user.profilePicture) {
+          try {
+            profilePictureUrl = await ctx.storage.getUrl(user.profilePicture);
+          } catch (error) {
+            console.error("Error getting profile picture URL:", error);
+          }
+        }
+
+        return {
+          ...user,
+          profilePictureUrl,
+        };
+      })
+    );
+
+    return usersWithProfilePics;
   },
 });
 

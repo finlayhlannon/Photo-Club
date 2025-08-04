@@ -28,7 +28,7 @@ export function SimplePhotoCard({ photo, onDeletePhoto }: SimplePhotoCardProps) 
   return (
     <>
       <div 
-        className="relative overflow-hidden cursor-pointer"
+        className="relative overflow-hidden cursor-pointer group"
         onClick={() => setShowPhotoModal(true)}
       >
         {!imageLoaded && (
@@ -37,11 +37,12 @@ export function SimplePhotoCard({ photo, onDeletePhoto }: SimplePhotoCardProps) 
         <img
           src={photo.imageUrl}
           alt={photo.title}
-          className={`w-full h-auto object-contain ${
+          className={`w-full h-auto object-cover transition-transform duration-200 group-hover:scale-105 ${
             imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
           style={{ display: 'block' }}
+          loading="lazy"
         />
       </div>
 

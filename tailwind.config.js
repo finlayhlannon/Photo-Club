@@ -35,11 +35,10 @@ module.exports = {
         "form-field": "16px",
         section: "32px",
       },
+      screens: {
+        xs: "475px",
+      },
     },
   },
-  variants: {
-    extend: {
-      boxShadow: ["hover", "active"],
-    },
-  },
+  plugins: [],
 };
