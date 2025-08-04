@@ -1,9 +1,26 @@
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { SimplePhotoCard } from "./SimplePhotoCard";
 
+const categories = [
+  "All",
+  "Portrait",
+  "Landscape", 
+  "Street",
+  "Nature",
+  "Architecture",
+  "Abstract",
+  "Sports",
+  "Events",
+  "Other"
+];
+
 export function Gallery() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const photos = useQuery(api.photos.getPhotos, {
+    category: selectedCategory === "All" ? undefined : selectedCategory,
     limit: 50,
   });
 
@@ -13,6 +30,25 @@ export function Gallery() {
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           📸 Photo Gallery
         </h1>
+      </div>
+
+      {/* Category Filter */}
+      <div className="mb-6">
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === category
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Photos Grid */}
