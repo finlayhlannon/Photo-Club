@@ -41,6 +41,7 @@ export const createUserProfile = mutation({
 export const updateProfile = mutation({
   args: {
     name: v.optional(v.string()),
+    bio: v.optional(v.string()),
     profilePicture: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
@@ -65,6 +66,7 @@ export const updateProfile = mutation({
 
     const updates: any = {};
     if (args.name !== undefined) updates.name = args.name;
+    if (args.bio !== undefined) updates.bio = args.bio;
     if (args.profilePicture !== undefined) updates.profilePicture = args.profilePicture;
 
     await ctx.db.patch(userProfile._id, updates);
@@ -80,13 +82,23 @@ export const getUserProfile = query({
       return null;
     }
 
-    // Provide default values for missing fields
+    // Provide default values for missing fields and get profile picture URL
+    let profilePictureUrl = null;
+    if (user.profilePicture) {
+      try {
+        profilePictureUrl = await ctx.storage.getUrl(user.profilePicture);
+      } catch (error) {
+        console.error("Error getting profile picture URL:", error);
+      }
+    }
+
     const safeUser = {
       ...user,
       name: user.name ?? "Anonymous",
       xp: user.xp ?? 0,
       level: user.level ?? 1,
       isAdmin: user.isAdmin ?? false,
+      profilePicture: profilePictureUrl,
     };
 
     // Get user's photos
@@ -174,6 +186,12 @@ export const addXP = mutation({
     });
 
     return { newXP, newLevel };
+  },
+});
+
+export const generateProfileUploadUrl = mutation({
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
   },
 });
 

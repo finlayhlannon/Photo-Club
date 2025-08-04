@@ -9,6 +9,7 @@ const applicationTables = {
     name: v.optional(v.string()),
     email: v.string(),
     profilePicture: v.optional(v.id("_storage")),
+    bio: v.optional(v.string()),
     xp: v.optional(v.number()),
     level: v.optional(v.number()),
     isAdmin: v.optional(v.boolean()),

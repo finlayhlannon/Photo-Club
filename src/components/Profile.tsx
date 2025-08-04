@@ -57,9 +57,20 @@ export function Profile({ userId }: ProfileProps) {
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div className="flex items-start space-x-6">
           <div>
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-              {name.charAt(0).toUpperCase()}
-            </div>
+            {userProfile.profilePicture ? (
+              <img 
+                src={userProfile.profilePicture} 
+                alt="Profile" 
+                className="w-24 h-24 rounded-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+                }}
+              />
+            ) : (
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
             {!isViewingOtherProfile && (
               <button
                 className="mt-2 px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs"
@@ -92,6 +103,15 @@ export function Profile({ userId }: ProfileProps) {
                 </button>
               )}
             </div>
+
+            {/* Bio */}
+            {userProfile.bio && (
+              <div className="mb-4">
+                <p className="text-gray-700 dark:text-gray-300">
+                  {userProfile.bio}
+                </p>
+              </div>
+            )}
 
             {/* XP and Level */}
             <div className="mb-4">
@@ -176,10 +196,13 @@ function EditProfileModal({ userProfile, onClose, onSave }: {
   onClose: () => void; 
   onSave: (fields: any) => Promise<void>; 
 }) {
-  const [bio, setBio] = useState("");
+  const [bio, setBio] = useState(userProfile.bio || "");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const generateUploadUrl = useMutation(api.users.generateProfileUploadUrl);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -194,9 +217,46 @@ function EditProfileModal({ userProfile, onClose, onSave }: {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    // You may need to upload the profile picture to storage and get an ID
-    await onSave({ bio, profilePicture });
-    setSaving(false);
+    
+    try {
+      let profilePictureId = userProfile.profilePicture;
+      
+      if (profilePicture) {
+        setUploading(true);
+        
+        // Get upload URL
+        const uploadUrl = await generateUploadUrl();
+        
+        // Upload file
+        const response = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": profilePicture.type },
+          body: profilePicture,
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to upload profile picture");
+        }
+        
+        const { storageId } = await response.json();
+        profilePictureId = storageId;
+        setUploading(false);
+      }
+      
+      // Only include profilePicture if it was changed
+      const updates: any = { bio };
+      if (profilePictureId !== userProfile.profilePicture) {
+        updates.profilePicture = profilePictureId;
+      }
+      
+      await onSave(updates);
+      
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
