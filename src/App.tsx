@@ -79,10 +79,10 @@ export default function App() {
           <div className="w-full max-w-md mx-auto">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                📸 PhotoClub
+                📸 SMUS Photo Club
               </h1>
               <p className="text-xl text-gray-600">
-                Join our school photography community
+                Join contests and events while building your portfolio!
               </p>
             </div>
             <SignInForm />
