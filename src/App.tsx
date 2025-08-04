@@ -17,7 +17,7 @@ type Page = "home" | "profile" | "viewProfile" | "contests" | "gallery" | "leade
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>("home");
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<Id<"users"> | null>(null);
 
   // Ensure dark mode is never enabled
   useEffect(() => {
@@ -47,8 +47,8 @@ export default function App() {
   // Listen for custom navigation events to profile
   useEffect(() => {
     const handleNavigateToProfile = (event: Event) => {
-      const customEvent = event as CustomEvent<string>;
-      setSelectedUserId(customEvent.detail as unknown as Id<"users">);
+      const customEvent = event as CustomEvent<Id<"users">>;
+      setSelectedUserId(customEvent.detail);
       setCurrentPage("viewProfile");
     };
     window.addEventListener("navigateToProfile", handleNavigateToProfile);
@@ -64,7 +64,7 @@ export default function App() {
           currentPage={currentPage} 
           setCurrentPage={setCurrentPage}
         />
-        <main className="pt-16">
+        <main className="pt-24 md:pt-20">
           <PageContent 
             currentPage={currentPage} 
             setCurrentPage={setCurrentPage} 
@@ -175,7 +175,7 @@ function Navigation({
   );
 }
 
-function PageContent({ currentPage, setCurrentPage, selectedUserId, setSelectedUserId }: { currentPage: Page, setCurrentPage: (page: Page) => void, selectedUserId: string | null, setSelectedUserId: (id: string | null) => void }) {
+function PageContent({ currentPage, setCurrentPage, selectedUserId, setSelectedUserId }: { currentPage: Page, setCurrentPage: (page: Page) => void, selectedUserId: Id<"users"> | null, setSelectedUserId: (id: Id<"users"> | null) => void }) {
   const user = useQuery(api.auth.loggedInUser);
   
   switch (currentPage) {
